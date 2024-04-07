@@ -12,9 +12,9 @@ def get_db_connection():
     """
     try:
         conn = psycopg2.connect(
-            dbname='your_dbname', 
-            user='your_username', 
-            password='your_password', 
+            dbname='nba', 
+            user='ellio', 
+            password='', 
             host='localhost'
         )
         return conn

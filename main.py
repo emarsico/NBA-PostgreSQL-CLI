@@ -1,28 +1,56 @@
 # main.py
 
 import click
-from csv_processor import read_csv_columns
-# from db_connector import get_db_connection  # Uncomment when db_connector is implemented
+from db_connector import get_db_connection
 
-@click.group()
-def cli():
+def insert_data():
+    # Code to insert data
     pass
 
-@click.command()
-@click.argument('file_name')
-@click.option('--columns', '-c', multiple=True, help='Columns to be extracted from the CSV file.')
-def process_csv(file_name, columns):
-    """
-    Processes a CSV file and extracts specified columns.
-    """
-    file_path = f'NBACSV/{file_name}'
-    df = read_csv_columns(file_path, columns)
-    if not df.empty:
-        print(df)
-    else:
-        print("No data found or error reading the file.")
+def delete_data():
+    # Code to delete data
+    pass
 
-cli.add_command(process_csv)
+def update_data():
+    # Code to update data
+    pass
+
+# ... Define other functions for each operation
+
+def main_menu():
+    while True:
+        print("""
+Welcome to the Database CLI Interface!
+
+Please select an option:
+1. Insert Data
+2. Delete Data
+3. Update Data
+4. Search Data
+5. Aggregate Functions
+6. Sorting
+7. Joins
+8. Grouping
+9. Subqueries
+10. Transactions
+11. Error Handling
+12. Exit
+""")
+        choice = input("Enter your choice (1-12): ")
+
+        if choice == '1':
+            insert_data()
+        elif choice == '2':
+            delete_data()
+        elif choice == '3':
+            update_data()
+        # ... Include elif clauses for other options
+        elif choice == '12':
+            print("Exiting the application.")
+            break
+        else:
+            print("Invalid choice, please try again.")
 
 if __name__ == '__main__':
-    cli()
+    main_menu()
+
