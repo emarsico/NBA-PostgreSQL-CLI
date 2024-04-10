@@ -18,10 +18,12 @@ def insert_data():
         columns = input("Enter the column names separated by commas (e.g., Column1,Column2): ")
         values_input = input("Enter the values in the same order as columns separated by commas (e.g., Value1,Value2): ")
         values = tuple(values_input.split(','))
+
+        placeholders = ', '.join(['%s'] * len(values))
         
         conn = get_db_connection()
         cur = conn.cursor()
-        query = f"INSERT INTO {table_name} ({columns}) VALUES (%s, %s)"  # Use formatting for table and column names, parameterized query for values
+        query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"  # Use formatting for table and column names, parameterized query for values
         cur.execute(query, values)
         conn.commit()
         log_query(cur.mogrify(query, values).decode('utf-8'))
@@ -121,6 +123,29 @@ def aggregate_functions():
     finally:
         cur.close()
         conn.close()
+
+def sorting():
+    """
+    Arrange query results based on specified columns and order, as provided by the user.
+    """
+    try:
+        table_name = input("Enter the table name: ")
+        column_name = input("Enter the column name to sort by: ")
+        sort_order = input("Enter the sort order (ASC or DESC): ")
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        query = f"SELECT * FROM {table_name} ORDER BY {column_name} {sort_order}"
+        cur.execute(query)
+        sorted_records = cur.fetchall()
+        for record in sorted_records:
+            print(record)
+        log_query(query)
+    except Exception as e:
+        print(f"An error occurred during sorting operation: {e}")
+    finally:
+        cur.close()
+        conn.close()        
 
 def joins():
     """

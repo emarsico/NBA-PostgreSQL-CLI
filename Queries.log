@@ -3,3 +3,20 @@
 2024-04-10 14:28:01: DELETE FROM Season WHERE season_id = 1
 2024-04-10 14:39:10: INSERT INTO Season (season_id,season_year) VALUES ('1', '1946')
 2024-04-10 14:39:29: SELECT * FROM Season WHERE season_id=1
+2024-04-10 14:45:46: INSERT INTO Season (season_id,season_year) VALUES ('2', '1947')
+2024-04-10 14:46:15: SELECT COUNT(season_id) FROM Season
+2024-04-10 14:47:50: SELECT * FROM Season ORDER BY season_id DESC
+2024-04-10 15:02:19: INSERT INTO Player (person_id,first_name,last_name,birthdate,height,weight,position,from_year,to_year,draft_year,draft_number,draft_round) VALUES ('6077', 'Elliot', 'Marsico', '2001-11-21', '72', '185', 'SG', '2024', '2024', '2024', '1', '1')
+2024-04-10 15:07:42: INSERT INTO Draft_History (draft_id,round_number,round_pick,overall_pick,season,person_id) VALUES ('1', '1', '1', '1', '2024', '6077')
+2024-04-10 15:08:22: SELECT * FROM Player INNER JOIN Draft_History ON Player.person_id = Draft_History.person_id
+2024-04-10 15:12:38: INSERT INTO Player (person_id,first_name,last_name,birthdate,height,weight,position,from_year,to_year,draft_year,draft_number,draft_round) VALUES ('3', 'Chris', 'Paul', '1985-05-06', '72', '175', 'PG', '2005', '2024', '2005', '4', '1')
+2024-04-10 15:14:28: SELECT * FROM Player GROUP BY person_id,height
+2024-04-10 15:18:50: INSERT INTO Season (season_id,season_year) VALUES ('78', '2024')
+2024-04-10 15:19:57: INSERT INTO Game (game_id,season_id,game_date) VALUES ('1', '78', '2024-04-10')
+2024-04-10 15:22:38: SELECT * FROM Player WHERE to_year IN (SELECT season_year FROM Season)
+2024-04-10 15:25:39: DELETE FROM Season WHERE season_id = 2;
+2024-04-10 15:25:39: INSERT INTO Season (season_id,season_year) VALUES (2,1947);
+2024-04-10 15:27:51: Database error occurred: column "season" of relation "season" does not exist
+LINE 1: INSERT INTO Season (season,season_year) VALUES (3,1948)
+                            ^
+
