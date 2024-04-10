@@ -11,13 +11,17 @@ def get_cursor(conn):
 
 def insert_data():
     """
-    Insert data into a table.
+    Insert data into a table, with table name, columns, and values specified by the user.
     """
     try:
+        table_name = input("Enter the table name: ")
+        columns = input("Enter the column names separated by commas (e.g., Column1,Column2): ")
+        values_input = input("Enter the values in the same order as columns separated by commas (e.g., Value1,Value2): ")
+        values = tuple(values_input.split(','))
+        
         conn = get_db_connection()
         cur = conn.cursor()
-        query = "INSERT INTO TableName (Column1, Column2) VALUES (%s, %s)"
-        values = ('Value1', 'Value2')
+        query = f"INSERT INTO {table_name} ({columns}) VALUES (%s, %s)"  # Use formatting for table and column names, parameterized query for values
         cur.execute(query, values)
         conn.commit()
         log_query(cur.mogrify(query, values).decode('utf-8'))
@@ -31,12 +35,15 @@ def insert_data():
 
 def delete_data():
     """
-    Delete specific records from a table.
+    Delete specific records from a table based on user-specified conditions.
     """
     try:
+        table_name = input("Enter the table name: ")
+        condition = input("Enter the condition for deletion (e.g., Column = 'Value'): ")
+        
         conn = get_db_connection()
         cur = conn.cursor()
-        query = "DELETE FROM TableName WHERE Condition"
+        query = f"DELETE FROM {table_name} WHERE {condition}"
         cur.execute(query)
         conn.commit()
         log_query(cur.mogrify(query).decode('utf-8'))
@@ -50,16 +57,19 @@ def delete_data():
 
 def update_data():
     """
-    Modify existing records in a table.
+    Modify existing records in a table based on user input.
     """
     try:
+        table_name = input("Enter the table name: ")
+        set_clause = input("Enter the column and new value to set (e.g., Column = 'NewValue'): ")
+        condition = input("Enter the condition for the update (e.g., ConditionColumn = 'ConditionValue'): ")
+        
         conn = get_db_connection()
         cur = conn.cursor()
-        query = "UPDATE TableName SET Column1 = %s WHERE Condition"
-        new_value = 'NewValue'
-        cur.execute(query, (new_value,))
+        query = f"UPDATE {table_name} SET {set_clause} WHERE {condition}"
+        cur.execute(query)
         conn.commit()
-        log_query(cur.mogrify(query, (new_value,)).decode('utf-8'))  # Log the executed query
+        log_query(cur.mogrify(query).decode('utf-8'))
         print("Data updated successfully.")
     except Exception as e:
         print(f"An error occurred during update operation: {e}")
@@ -70,17 +80,20 @@ def update_data():
 
 def search_data():
     """
-    Find records based on specified criteria.
+    Find records based on specified criteria provided by the user.
     """
     try:
+        table_name = input("Enter the table name: ")
+        condition = input("Enter the search condition (e.g., Column = 'Value'): ")
+        
         conn = get_db_connection()
         cur = conn.cursor()
-        query = "SELECT * FROM TableName WHERE Condition"
+        query = f"SELECT * FROM {table_name} WHERE {condition}"
         cur.execute(query)
         records = cur.fetchall()
         for record in records:
             print(record)
-        log_query(query)  # Log the executed query
+        log_query(query)
     except Exception as e:
         print(f"An error occurred during search operation: {e}")
     finally:
@@ -89,54 +102,43 @@ def search_data():
 
 def aggregate_functions():
     """
-    Perform calculations like sum, average, count, min, and max.
+    Perform calculations like sum, average, count, min, and max, based on user input.
     """
     try:
+        table_name = input("Enter the table name: ")
+        column_name = input("Enter the column name for aggregation: ")
+        agg_function = input("Enter the aggregate function to perform (SUM, AVG, COUNT, MIN, MAX): ")
+        
         conn = get_db_connection()
         cur = conn.cursor()
-        query = "SELECT SUM(Column) FROM TableName"
+        query = f"SELECT {agg_function}({column_name}) FROM {table_name}"
         cur.execute(query)
-        sum_value = cur.fetchone()
-        print("Sum:", sum_value)
-        log_query(query)  # Log the executed query
+        result = cur.fetchone()
+        print(f"{agg_function} of {column_name}: ", result[0])
+        log_query(query)
     except Exception as e:
         print(f"An error occurred during aggregate functions operation: {e}")
     finally:
         cur.close()
         conn.close()
 
-def sorting():
-    """
-    Arrange query results based on specified columns.
-    """
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        query = "SELECT * FROM TableName ORDER BY Column ASC"
-        cur.execute(query)
-        sorted_records = cur.fetchall()
-        for record in sorted_records:
-            print(record)
-        log_query(query)  # Log the executed query
-    except Exception as e:
-        print(f"An error occurred during sorting operation: {e}")
-    finally:
-        cur.close()
-        conn.close()
-
 def joins():
     """
-    Combine data from multiple tables using relationships.
+    Combine data from multiple tables using relationships, based on user input.
     """
     try:
+        table1_name = input("Enter the first table name: ")
+        table2_name = input("Enter the second table name: ")
+        join_condition = input("Enter the join condition (e.g., Table1.Column = Table2.Column): ")
+        
         conn = get_db_connection()
         cur = conn.cursor()
-        query = "SELECT * FROM Table1 INNER JOIN Table2 ON Table1.Key = Table2.Key"
+        query = f"SELECT * FROM {table1_name} INNER JOIN {table2_name} ON {join_condition}"
         cur.execute(query)
         joined_data = cur.fetchall()
         for data in joined_data:
             print(data)
-        log_query(query)  # Log the executed query
+        log_query(query)
     except Exception as e:
         print(f"An error occurred during join operation: {e}")
     finally:
@@ -145,17 +147,26 @@ def joins():
 
 def grouping():
     """
-    Group query results based on specified columns.
+    Group query results based on specified columns, as provided by the user,
+    optionally performing an aggregate function.
     """
     try:
+        table_name = input("Enter the table name: ")
+        group_by_column = input("Enter the column name(s) to group by (e.g., Column1, Column2): ")
+        agg_function = input("Optional - Enter the aggregate function and column (e.g., COUNT(Column3), leave blank if not applicable): ")
+        
         conn = get_db_connection()
         cur = conn.cursor()
-        query = "SELECT Column, COUNT(*) FROM TableName GROUP BY Column"
+        if agg_function:
+            query = f"SELECT {group_by_column}, {agg_function} FROM {table_name} GROUP BY {group_by_column}"
+        else:
+            query = f"SELECT * FROM {table_name} GROUP BY {group_by_column}"
+        
         cur.execute(query)
         grouped_data = cur.fetchall()
         for data in grouped_data:
             print(data)
-        log_query(query)  # Log the executed query
+        log_query(query)
     except Exception as e:
         print(f"An error occurred during grouping operation: {e}")
     finally:
@@ -164,17 +175,21 @@ def grouping():
 
 def subqueries():
     """
-    Support nested operations within queries.
+    Execute a query that includes a subquery, with all parts specified by the user.
     """
     try:
+        main_query = input("Enter the main query, using '(SUBQUERY)' where the subquery should be inserted:\n")
+        subquery = input("Enter the subquery:\n")
+        
+        full_query = main_query.replace('(SUBQUERY)', f"({subquery})")
+        
         conn = get_db_connection()
         cur = conn.cursor()
-        query = "SELECT * FROM TableName WHERE Column IN (SELECT Column FROM AnotherTable)"
-        cur.execute(query)
+        cur.execute(full_query)
         subquery_results = cur.fetchall()
         for result in subquery_results:
             print(result)
-        log_query(query)  # Log the executed query
+        log_query(full_query)
     except Exception as e:
         print(f"An error occurred during subquery operation: {e}")
     finally:
@@ -183,21 +198,27 @@ def subqueries():
 
 def transactions():
     """
-    Ensure consistency and reliability of database operations.
+    Ensure consistency and reliability of database operations by executing a series of user-defined operations within a transaction.
     """
     try:
         conn = get_db_connection()
         cur = conn.cursor()
         conn.autocommit = False
-        # Begin transaction block
-        cur.execute("BEGIN;")
-        # Perform one or more operations; e.g., cur.execute(...)
-        # Commit transaction
-        cur.execute("COMMIT;")
+
+        num_operations = int(input("Enter the number of operations in the transaction: "))
+        operations = []
+
+        for i in range(num_operations):
+            operation = input(f"Enter SQL operation {i + 1}: ")
+            operations.append(operation)
+
+        for operation in operations:
+            cur.execute(operation)
+
         conn.commit()
         print("Transaction completed successfully.")
-        # Log the transaction - you'll want to log the actual operations in the transaction
-        log_query("Transaction BEGIN; followed by operations; COMMIT;")  
+        for operation in operations:
+            log_query(operation)  
     except Exception as e:
         conn.rollback()
         print(f"Transaction failed and has been rolled back: {e}")
@@ -206,24 +227,32 @@ def transactions():
         cur.close()
         conn.close()
 
+
 def error_handling():
     """
-    Catch and handle exceptions gracefully during database operations.
+    Catch and handle exceptions gracefully during database operations, with enhanced logging and feedback.
     """
     try:
-        # Assume an operation that might fail
+        # Placeholder for an operation that might fail
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("...")
+        operation = input("Enter the SQL command to execute: ")
+        cur.execute(operation)
     except psycopg2.DatabaseError as e:
         print(f"Database error occurred: {e}")
+        log_query(f"Database error occurred: {e}")  # Logging the error
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
+        log_query(f"Unexpected error occurred: {e}")  # Logging the error
     finally:
         cur.close()
         conn.close()
 
+#
 
+#
+
+#
 
 # Main
 
