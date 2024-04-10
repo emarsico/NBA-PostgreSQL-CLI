@@ -1,3 +1,5 @@
 2024-04-10 14:16:38: INSERT INTO Season (season_id,season_year) VALUES ('1', '1946')
 2024-04-10 14:25:57: UPDATE Season SET season_year = 1947 WHERE season_id = 1
 2024-04-10 14:28:01: DELETE FROM Season WHERE season_id = 1
+2024-04-10 14:39:10: INSERT INTO Season (season_id,season_year) VALUES ('1', '1946')
+2024-04-10 14:39:29: SELECT * FROM Season WHERE season_id=1
