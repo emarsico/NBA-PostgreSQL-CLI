@@ -32,8 +32,7 @@ def create_database():
             host='localhost'
         )
         setup_tables(conn)
-    else:
-        print("Database 'nba' already exists.")
+
     cur.close()
     conn.close()
 
